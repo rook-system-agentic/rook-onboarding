@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Onboarding Rook System</title>
+    <style>
+        :root {
+            --bg-main: #F5EBE3;
+            --brown-dark: #4A2C17;
+            --brown-medium: #6B3A1F;
+            --brown-light: #8B5E3C;
+            --beige-badge: #D4C4A8;
+            --green-dark: #2D5016;
+            --green-positive: #1B7A3D;
+            --red-negative: #C0392B;
+            --orange-cta: #D4722C;
+            --white: #FFFFFF;
+            --text-body: #3D2B1F;
+            --border-light: #D4C4A8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #1a1a1a;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: var(--bg-main);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Static slides: imagem de fundo que preenche 100% sem distorcer */
+        .slide-static {
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: var(--bg-main);
+        }
+
+        /* Navigation */
+        .nav-bar {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: rgba(74, 44, 23, 0.92);
+            padding: 8px 20px;
+            border-radius: 40px;
+            z-index: 1000;
+            backdrop-filter: blur(6px);
+        }
+
+        .nav-bar button {
+            background: var(--white);
+            color: var(--brown-dark);
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: clamp(11px, 1.4vw, 14px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-bar button:hover {
+            background: var(--orange-cta);
+            color: var(--white);
+        }
+
+        .nav-bar button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .nav-bar .slide-counter {
+            color: var(--white);
+            font-family: 'Arial', sans-serif;
+            font-size: clamp(11px, 1.4vw, 14px);
+            min-width: 50px;
+            text-align: center;
+        }
+
+        /* ===== SLIDE: PERSONALIZAÇÃO ===== */
+        .slide-personalization {
+            padding: 6vh 6vw;
+            justify-content: center;
+            gap: 3vh;
+        }
+
+        .slide-personalization h1 {
+            font-size: clamp(22px, 3vw, 42px);
+            color: var(--brown-dark);
+        }
+
+        .slide-personalization p {
+            font-family: Arial, sans-serif;
+            font-size: clamp(14px, 1.6vw, 20px);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        .slide-personalization .form-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .slide-personalization .form-group .badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--brown-medium);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .slide-personalization .form-group label {
+            font-size: clamp(14px, 1.5vw, 20px);
+            color: var(--text-body);
+            min-width: 180px;
+        }
+
+        .slide-personalization .form-group input {
+            flex: 1;
+            max-width: 400px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: clamp(13px, 1.2vw, 16px);
+            background: var(--white);
+            color: var(--text-body);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .slide-personalization .form-group input:focus {
+            outline: none;
+            border-color: var(--brown-medium);
+            box-shadow: 0 0 0 3px rgba(107, 58, 31, 0.1);
+        }
+
+        /* ===== SLIDE: QUESTIONÁRIO ===== */
+        .slide-questionnaire {
+            padding: 3vh 5vw 2vh;
+            justify-content: flex-start;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .slide-questionnaire h1 {
+            font-size: clamp(18px, 2.5vw, 36px);
+            color: var(--brown-dark);
+            margin-bottom: 2vh;
+        }
+
+        .slide-questionnaire .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.2vh;
+            gap: 12px;
+        }
+
+        .slide-questionnaire .form-row .badge {
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 50%;
+            background: var(--brown-medium);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .slide-questionnaire .form-row .badge.alt {
+            background: var(--beige-badge);
+            color: var(--brown-dark);
+            font-style: italic;
+            font-size: 11px;
+        }
+
+        .slide-questionnaire .form-row label {
+            font-size: clamp(12px, 1.1vw, 16px);
+            color: var(--text-body);
+            flex: 1;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .slide-questionnaire .form-row input,
+        .slide-questionnaire .form-row select {
+            width: 30%;
+            min-width: 160px;
+            padding: 8px 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: clamp(12px, 1vw, 15px);
+            background: var(--white);
+            color: var(--text-body);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .slide-questionnaire .form-row input:focus,
+        .slide-questionnaire .form-row select:focus {
+            outline: none;
+            border-color: var(--brown-medium);
+            box-shadow: 0 0 0 3px rgba(107, 58, 31, 0.1);
+        }
+
+        .slide-questionnaire .tax-manual {
+            display: none;
+            margin-left: 40px;
+            margin-bottom: 0.8vh;
+        }
+
+        .slide-questionnaire .tax-manual.visible {
+            display: flex;
+        }
+
+        .slide-questionnaire .footer-note {
+            margin-top: 1.5vh;
+            padding-top: 1vh;
+            border-top: 1px solid var(--border-light);
+            font-style: italic;
+            font-size: clamp(11px, 0.9vw, 14px);
+            color: var(--brown-light);
+        }
+
+        .slide-questionnaire .btn-calculate {
+            margin-top: 2vh;
+            padding: 14px 48px;
+            background: var(--orange-cta);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: clamp(14px, 1.4vw, 20px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            align-self: center;
+            box-shadow: 0 4px 12px rgba(212, 114, 44, 0.4);
+        }
+
+        .slide-questionnaire .btn-calculate:hover {
+            background: var(--brown-dark);
+            transform: scale(1.02);
+        }
+
+        /* ===== SLIDE: RESULTADO ===== */
+        .slide-result {
+            padding: 3vh 4vw;
+            justify-content: flex-start;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .slide-result h1 {
+            font-size: clamp(18px, 2.4vw, 34px);
+            color: var(--brown-dark);
+            margin-bottom: 2vh;
+        }
+
+        .slide-result .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2vh 2vw;
+            width: 100%;
+        }
+
+        .slide-result .result-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2.5vh 2vw;
+            border: 1px solid var(--border-light);
+        }
+
+        .slide-result .result-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .slide-result .result-card.span-2 {
+            grid-column: span 2;
+        }
+
+        .slide-result .result-card h3 {
+            font-family: 'Arial', sans-serif;
+            font-size: clamp(10px, 0.9vw, 13px);
+            color: var(--brown-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .slide-result .result-card .big-number {
+            font-size: clamp(18px, 2.2vw, 32px);
+            color: var(--brown-dark);
+            font-weight: bold;
+        }
+
+        .slide-result .result-card .big-number.green {
+            color: var(--green-positive);
+        }
+
+        .slide-result .result-card .big-number.orange {
+            color: var(--orange-cta);
+        }
+
+        .slide-result .result-card .big-number.red {
+            color: var(--red-negative);
+        }
+
+        .slide-result .result-card p {
+            font-family: 'Arial', sans-serif;
+            font-size: clamp(10px, 0.8vw, 13px);
+            color: var(--text-body);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        /* Status badge */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-family: 'Arial', sans-serif;
+            font-size: clamp(11px, 0.9vw, 14px);
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .status-badge.positive {
+            background: rgba(27, 122, 61, 0.12);
+            color: var(--green-positive);
+        }
+
+        .status-badge.negative {
+            background: rgba(192, 57, 43, 0.12);
+            color: var(--red-negative);
+        }
+
+        .slide-result .insight-box {
+            grid-column: 1 / -1;
+            background: var(--brown-dark);
+            color: var(--white);
+            border-radius: 12px;
+            padding: 2.5vh 3vw;
+        }
+
+        .slide-result .insight-box h3 {
+            font-family: 'Arial', sans-serif;
+            font-size: clamp(11px, 1vw, 15px);
+            color: var(--beige-badge);
+            margin-bottom: 8px;
+        }
+
+        .slide-result .insight-box p {
+            font-family: 'Arial', sans-serif;
+            font-size: clamp(12px, 1vw, 15px);
+            line-height: 1.6;
+            color: var(--white);
+        }
+
+        .slide-result .chart-container {
+            width: 100%;
+            height: 80px;
+            margin-top: 10px;
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .slide-result .bar {
+            flex: 1;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: height 0.6s ease;
+        }
+
+        .slide-result .bar-label {
+            position: absolute;
+            bottom: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Arial', sans-serif;
+            font-size: clamp(9px, 0.7vw, 11px);
+            color: var(--brown-light);
+            white-space: nowrap;
+        }
+
+        .slide-result .bar-value {
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Arial', sans-serif;
+            font-size: clamp(9px, 0.7vw, 11px);
+            color: var(--text-body);
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* Comparison bar visual */
+        .comparison-bar {
+            width: 100%;
+            height: 32px;
+            border-radius: 8px;
+            background: #f0e6dd;
+            position: relative;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .comparison-bar .bar-fill {
+            height: 100%;
+            border-radius: 8px;
+            transition: width 0.8s ease;
+        }
+
+        .comparison-bar .bar-marker {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--brown-dark);
+        }
+
+        .comparison-bar .bar-marker::after {
+            content: attr(data-label);
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Arial', sans-serif;
+            font-size: 10px;
+            color: var(--brown-dark);
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        /* Rook icon watermark */
+        .rook-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 14px;
+            width: 24px;
+            height: 24px;
+            opacity: 0.6;
+        }
+
+        /* ===== RESPONSIVO: TABLET ===== */
+        @media (max-width: 1024px) {
+            .slide-questionnaire .form-row input,
+            .slide-questionnaire .form-row select {
+                width: 40%;
+            }
+
+            .slide-result .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .slide-result .result-card.span-2 {
+                grid-column: span 2;
+            }
+        }
+
+        /* ===== RESPONSIVO: MOBILE ===== */
+        @media (max-width: 768px) {
+            .nav-bar {
+                bottom: 8px;
+                padding: 6px 14px;
+                gap: 6px;
+            }
+
+            .nav-bar button {
+                padding: 6px 12px;
+            }
+
+            .slide-personalization {
+                padding: 4vh 5vw;
+                gap: 2vh;
+            }
+
+            .slide-personalization .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .slide-personalization .form-group input {
+                width: 100%;
+                max-width: none;
+            }
+
+            .slide-questionnaire {
+                padding: 2vh 4vw 8vh;
+            }
+
+            .slide-questionnaire .form-row {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .slide-questionnaire .form-row label {
+                width: calc(100% - 40px);
+            }
+
+            .slide-questionnaire .form-row input,
+            .slide-questionnaire .form-row select {
+                width: 100%;
+                margin-left: 40px;
+            }
+
+            .slide-questionnaire .tax-manual {
+                margin-left: 0;
+            }
+
+            .slide-questionnaire .tax-manual input {
+                margin-left: 40px;
+            }
+
+            .slide-result {
+                padding: 3vh 4vw 8vh;
+            }
+
+            .slide-result .result-grid {
+                grid-template-columns: 1fr;
+                gap: 2vh;
+            }
+
+            .slide-result .result-card.span-2,
+            .slide-result .insight-box {
+                grid-column: 1;
+            }
+        }
+
+        /* ===== RESPONSIVO: MOBILE PEQUENO ===== */
+        @media (max-width: 480px) {
+            .slide-questionnaire h1 {
+                font-size: 18px;
+                margin-bottom: 1.5vh;
+            }
+
+            .slide-questionnaire .form-row .badge {
+                width: 24px;
+                height: 24px;
+                min-width: 24px;
+                font-size: 10px;
+            }
+
+            .slide-questionnaire .form-row input,
+            .slide-questionnaire .form-row select {
+                margin-left: 34px;
+                font-size: 14px;
+                padding: 10px 12px;
+            }
+
+            .slide-questionnaire .btn-calculate {
+                padding: 12px 32px;
+                font-size: 14px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container" id="presentation">
+        <!-- Slide 1: Capa (estático) -->
+        <div class="slide slide-static active" style="background-image: url('slides/slide-01.png');" data-slide="1"></div>
+
+        <!-- Slide 2: Quem somos (estático) -->
+        <div class="slide slide-static" style="background-image: url('slides/slide-02.png');" data-slide="2"></div>
+
+        <!-- Slide 3: Personalização (nome do restaurante e responsável) -->
+        <div class="slide slide-personalization" data-slide="3">
+            <h1>Bem-vindo ao Rook!</h1>
+            <p>Antes de começarmos, vamos personalizar sua experiência.</p>
+            <div class="form-group">
+                <div class="badge">1</div>
+                <label>Nome do restaurante</label>
+                <input type="text" id="restaurant_name" placeholder="Ex: Restaurante Sabor & Arte">
+            </div>
+            <div class="form-group">
+                <div class="badge">2</div>
+                <label>Nome do responsável</label>
+                <input type="text" id="responsible_name" placeholder="Ex: João Silva">
+            </div>
+            <svg class="rook-icon" viewBox="0 0 24 24" fill="var(--brown-dark)">
+                <path d="M5 2h2v3H5V2zm4 0h2v3H9V2zm4 0h2v3h-2V2zm4 0h2v3h-2V2zM3 6h18v2H3V6zm1 3h16v11H4V9zm2 2v7h12v-7H6z"/>
+            </svg>
+        </div>
+
+        <!-- Slide 4: Questionário interativo -->
+        <div class="slide slide-questionnaire" data-slide="4">
+            <h1>Conhecendo o seu negócio!</h1>
+            
+            <div class="form-row">
+                <div class="badge">1</div>
+                <label>Qual segmento atua?</label>
+                <select id="q_segment">
+                    <option value="">Selecione...</option>
+                    <option value="restaurante">Restaurante</option>
+                    <option value="bar">Bar / Pub</option>
+                    <option value="pizzaria">Pizzaria</option>
+                    <option value="hamburgueria">Hamburgueria</option>
+                    <option value="cafeteria">Cafeteria / Padaria</option>
+                    <option value="delivery">Delivery / Dark Kitchen</option>
+                    <option value="hotel">Hotel / Pousada</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="badge">2</div>
+                <label>Qual o regime tributário atual?</label>
+                <select id="q_tax_regime" onchange="handleTaxRegimeChange()">
+                    <option value="">Selecione...</option>
+                    <option value="simples">Simples Nacional (~8%)</option>
+                    <option value="presumido">Lucro Presumido (~15%)</option>
+                    <option value="real">Lucro Real (~18%)</option>
+                    <option value="nao_sei">Não sei / Informar manualmente</option>
+                </select>
+            </div>
+
+            <div class="form-row tax-manual" id="tax_manual_row">
+                <div class="badge alt">%</div>
+                <label>Quanto paga de impostos (% sobre faturamento)?</label>
+                <input type="number" id="q_tax_manual" placeholder="Ex: 12" min="0" max="50" step="0.5">
+            </div>
+
+            <div class="form-row">
+                <div class="badge">3</div>
+                <label>Quanto é o seu faturamento mensal?</label>
+                <input type="text" id="q_revenue" placeholder="R$ 0,00" oninput="formatCurrency(this)">
+            </div>
+
+            <div class="form-row">
+                <div class="badge">4</div>
+                <label>Mão de Obra — como prefere informar?</label>
+                <select id="q_cmo_mode" onchange="handleCmoModeChange()">
+                    <option value="">Selecione...</option>
+                    <option value="valor">Sei o custo total (R$)</option>
+                    <option value="funcionarios">Sei o número de funcionários</option>
+                </select>
+            </div>
+
+            <div class="form-row tax-manual" id="cmo_value_row">
+                <div class="badge alt">R$</div>
+                <label>Qual o custo TOTAL com Mão de Obra (CMO)?</label>
+                <input type="text" id="q_cmo" placeholder="R$ 0,00" oninput="formatCurrency(this)">
+            </div>
+
+            <div class="form-row tax-manual" id="cmo_employees_row">
+                <div class="badge alt">#</div>
+                <label>Qual o número total de funcionários?</label>
+                <input type="number" id="q_employees" placeholder="Ex: 12" min="0" max="500">
+            </div>
+
+            <div class="form-row">
+                <div class="badge">5</div>
+                <label>Qual o valor de Despesas com Vendas (Comercial e Marketing)?</label>
+                <input type="text" id="q_sales_expenses" placeholder="R$ 0,00" oninput="formatCurrency(this)">
+            </div>
+
+            <div class="form-row">
+                <div class="badge">6</div>
+                <label>Qual o valor de Despesas Gerais / Administrativas?</label>
+                <input type="text" id="q_general_expenses" placeholder="R$ 0,00" oninput="formatCurrency(this)">
+            </div>
+
+            <div class="form-row">
+                <div class="badge">7</div>
+                <label>Qual o valor de Retirada do(s) Sócio(s)?</label>
+                <input type="text" id="q_partner_withdrawal" placeholder="R$ 0,00" oninput="formatCurrency(this)">
+            </div>
+
+            <div class="form-row">
+                <div class="badge">8</div>
+                <label>Qual o CMV médio estimado (%)?</label>
+                <input type="number" id="q_cmv" placeholder="Ex: 35" min="0" max="80" step="0.5">
+            </div>
+
+            <p class="footer-note">
+                Com essas respostas, calculamos se o seu negócio está no lucro ou no prejuízo, e quanto precisa faturar para cobrir os custos fixos.
+            </p>
+
+            <button class="btn-calculate" onclick="calculateBreakeven()">Calcular Ponto de Equilíbrio</button>
+
+            <svg class="rook-icon" viewBox="0 0 24 24" fill="var(--brown-dark)">
+                <path d="M5 2h2v3H5V2zm4 0h2v3H9V2zm4 0h2v3h-2V2zm4 0h2v3h-2V2zM3 6h18v2H3V6zm1 3h16v11H4V9zm2 2v7h12v-7H6z"/>
+            </svg>
+        </div>
+
+        <!-- Slide 5: Resultado do diagnóstico -->
+        <div class="slide slide-result" data-slide="5">
+            <h1>Diagnóstico Rápido — <span id="result_restaurant_name">Seu Restaurante</span></h1>
+            
+            <div class="result-grid">
+                <!-- Row 1: Situação Atual (comparação) -->
+                <div class="result-card full-width" id="comparison_card">
+                    <h3>Situação Atual</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <p style="margin:0; font-size: clamp(11px, 0.9vw, 13px);">Faturamento informado</p>
+                            <div class="big-number" id="result_revenue" style="font-size: clamp(16px, 2vw, 28px);">R$ 0,00</div>
+                        </div>
+                        <div style="font-size: clamp(20px, 2vw, 32px); color: var(--brown-light);">vs</div>
+                        <div>
+                            <p style="margin:0; font-size: clamp(11px, 0.9vw, 13px);">Ponto de Equilíbrio necessário</p>
+                            <div class="big-number orange" id="result_breakeven" style="font-size: clamp(16px, 2vw, 28px);">R$ 0,00</div>
+                        </div>
+                        <div id="result_status_container">
+                            <span class="status-badge" id="result_status">—</span>
+                        </div>
+                    </div>
+                    <div class="comparison-bar" id="comparison_bar_container">
+                        <div class="bar-fill" id="comparison_bar_fill"></div>
+                        <div class="bar-marker" id="comparison_bar_marker" data-label="PE"></div>
+                    </div>
+                    <p id="result_comparison_text" style="margin-top: 8px;"></p>
+                </div>
+
+                <!-- Row 2: Métricas -->
+                <div class="result-card">
+                    <h3>Margem de Contribuição</h3>
+                    <div class="big-number green" id="result_margin">0%</div>
+                    <p>De cada R$ 1,00 faturado, esse % fica para custos fixos e lucro.</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>Custos Fixos Totais</h3>
+                    <div class="big-number orange" id="result_fixed_costs">R$ 0,00</div>
+                    <p id="result_fixed_breakdown">Composição dos custos fixos mensais.</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>Composição dos Custos</h3>
+                    <div class="chart-container" id="result_chart"></div>
+                </div>
+
+                <!-- Row 3: Insight -->
+                <div class="insight-box">
+                    <h3>Insight Rook</h3>
+                    <p id="result_insight">Preencha o questionário para gerar seu diagnóstico personalizado.</p>
+                </div>
+            </div>
+
+            <svg class="rook-icon" viewBox="0 0 24 24" fill="var(--white)" style="opacity: 0.3;">
+                <path d="M5 2h2v3H5V2zm4 0h2v3H9V2zm4 0h2v3h-2V2zm4 0h2v3h-2V2zM3 6h18v2H3V6zm1 3h16v11H4V9zm2 2v7h12v-7H6z"/>
+            </svg>
+        </div>
+
+        <!-- Slides 6-23: Restante da apresentação (estáticos) -->
+        <div class="slide slide-static" style="background-image: url('slides/slide-04.png');" data-slide="6"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-05.png');" data-slide="7"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-06.png');" data-slide="8"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-07.png');" data-slide="9"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-08.png');" data-slide="10"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-09.png');" data-slide="11"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-10.png');" data-slide="12"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-11.png');" data-slide="13"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-12.png');" data-slide="14"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-13.png');" data-slide="15"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-14.png');" data-slide="16"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-15.png');" data-slide="17"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-16.png');" data-slide="18"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-17.png');" data-slide="19"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-18.png');" data-slide="20"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-19.png');" data-slide="21"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-20.png');" data-slide="22"></div>
+        <div class="slide slide-static" style="background-image: url('slides/slide-21.png');" data-slide="23"></div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-bar">
+        <button id="btn-prev" onclick="prevSlide()" disabled>&larr; Anterior</button>
+        <span class="slide-counter" id="slide-counter">1 / 23</span>
+        <button id="btn-next" onclick="nextSlide()">Próximo &rarr;</button>
+    </div>
+
+    <script>
+        // ===== SLIDE NAVIGATION =====
+        let currentSlide = 1;
+        const totalSlides = 23;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(s => s.classList.remove('active'));
+            slides[n - 1].classList.add('active');
+            currentSlide = n;
+            document.getElementById('slide-counter').textContent = `${n} / ${totalSlides}`;
+            document.getElementById('btn-prev').disabled = (n === 1);
+            document.getElementById('btn-next').disabled = (n === totalSlides);
+        }
+
+        function nextSlide() {
+            if (currentSlide === 4) {
+                calculateBreakeven();
+                return;
+            }
+            if (currentSlide < totalSlides) showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+            if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        });
+
+        // Touch/swipe navigation for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, false);
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 60) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        }, false);
+
+        // ===== TAX REGIME LOGIC =====
+        function handleTaxRegimeChange() {
+            const regime = document.getElementById('q_tax_regime').value;
+            const manualRow = document.getElementById('tax_manual_row');
+            if (regime === 'nao_sei') {
+                manualRow.classList.add('visible');
+            } else {
+                manualRow.classList.remove('visible');
+            }
+        }
+
+        // ===== CMO MODE LOGIC =====
+        function handleCmoModeChange() {
+            const mode = document.getElementById('q_cmo_mode').value;
+            const valueRow = document.getElementById('cmo_value_row');
+            const employeesRow = document.getElementById('cmo_employees_row');
+            valueRow.classList.remove('visible');
+            employeesRow.classList.remove('visible');
+            if (mode === 'valor') {
+                valueRow.classList.add('visible');
+            } else if (mode === 'funcionarios') {
+                employeesRow.classList.add('visible');
+            }
+        }
+
+        // ===== CURRENCY FORMATTING =====
+        function formatCurrency(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value === '') { input.value = ''; return; }
+            value = (parseInt(value) / 100).toFixed(2);
+            input.value = 'R$ ' + value.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        function parseCurrency(str) {
+            if (!str) return 0;
+            return parseFloat(str.replace('R$', '').replace(/\./g, '').replace(',', '.').trim()) || 0;
+        }
+
+        // ===== BREAKEVEN CALCULATION =====
+        function calculateBreakeven() {
+            const restaurantName = document.getElementById('restaurant_name').value || 'Seu Restaurante';
+            const responsibleName = document.getElementById('responsible_name').value || '';
+            const segment = document.getElementById('q_segment').value;
+            const taxRegime = document.getElementById('q_tax_regime').value;
+            
+            // Tax rate
+            let taxRate = 0;
+            switch (taxRegime) {
+                case 'simples': taxRate = 8; break;
+                case 'presumido': taxRate = 15; break;
+                case 'real': taxRate = 18; break;
+                case 'nao_sei': taxRate = parseFloat(document.getElementById('q_tax_manual').value) || 10; break;
+                default: taxRate = 10;
+            }
+            const cardRate = 2;
+
+            // Revenue (faturamento informado)
+            const revenue = parseCurrency(document.getElementById('q_revenue').value);
+
+            // CMO
+            const cmoMode = document.getElementById('q_cmo_mode').value;
+            let cmo = 0;
+            let employees = 0;
+            if (cmoMode === 'valor') {
+                cmo = parseCurrency(document.getElementById('q_cmo').value);
+            } else if (cmoMode === 'funcionarios') {
+                employees = parseInt(document.getElementById('q_employees').value) || 0;
+                cmo = employees * 2500;
+            }
+
+            // Other costs
+            const salesExpenses = parseCurrency(document.getElementById('q_sales_expenses').value);
+            const generalExpenses = parseCurrency(document.getElementById('q_general_expenses').value);
+            const partnerWithdrawal = parseCurrency(document.getElementById('q_partner_withdrawal').value);
+
+            // CMV
+            const cmvPct = parseFloat(document.getElementById('q_cmv').value) || 35;
+
+            // Calculate
+            const totalFixedCosts = cmo + salesExpenses + generalExpenses + partnerWithdrawal;
+            const totalVariablePct = (cmvPct + taxRate + cardRate) / 100;
+            const contributionMargin = 1 - totalVariablePct;
+            const breakeven = contributionMargin > 0 ? totalFixedCosts / contributionMargin : 0;
+
+            // Comparison: revenue vs breakeven
+            const surplus = revenue - breakeven;
+            const isPositive = surplus >= 0;
+
+            // Update result slide
+            document.getElementById('result_restaurant_name').textContent = restaurantName;
+            document.getElementById('result_breakeven').textContent = formatBRL(breakeven);
+            document.getElementById('result_margin').textContent = (contributionMargin * 100).toFixed(1) + '%';
+            document.getElementById('result_fixed_costs').textContent = formatBRL(totalFixedCosts);
+            
+            document.getElementById('result_fixed_breakdown').textContent = 
+                `CMO: ${formatBRL(cmo)} | Vendas: ${formatBRL(salesExpenses)} | Gerais: ${formatBRL(generalExpenses)} | Sócios: ${formatBRL(partnerWithdrawal)}`;
+
+            // Revenue comparison
+            if (revenue > 0) {
+                document.getElementById('result_revenue').textContent = formatBRL(revenue);
+                
+                const statusEl = document.getElementById('result_status');
+                if (isPositive) {
+                    statusEl.className = 'status-badge positive';
+                    statusEl.textContent = `Superávit: ${formatBRL(surplus)}`;
+                } else {
+                    statusEl.className = 'status-badge negative';
+                    statusEl.textContent = `Déficit: ${formatBRL(Math.abs(surplus))}`;
+                }
+
+                // Comparison bar
+                const maxVal = Math.max(revenue, breakeven) * 1.1;
+                const revenueWidth = (revenue / maxVal) * 100;
+                const breakevenPos = (breakeven / maxVal) * 100;
+                
+                const barFill = document.getElementById('comparison_bar_fill');
+                barFill.style.width = revenueWidth + '%';
+                barFill.style.background = isPositive ? 'var(--green-positive)' : 'var(--red-negative)';
+                
+                const barMarker = document.getElementById('comparison_bar_marker');
+                barMarker.style.left = breakevenPos + '%';
+                barMarker.setAttribute('data-label', 'PE: ' + formatBRL(breakeven));
+
+                document.getElementById('result_comparison_text').textContent = isPositive
+                    ? `Seu faturamento está ${((surplus / breakeven) * 100).toFixed(0)}% acima do ponto de equilíbrio. Margem de segurança saudável.`
+                    : `Seu faturamento está ${((Math.abs(surplus) / breakeven) * 100).toFixed(0)}% abaixo do necessário. Você precisa faturar mais ${formatBRL(Math.abs(surplus))} para sair do prejuízo.`;
+                
+                document.getElementById('comparison_card').style.display = 'block';
+            } else {
+                // Se não informou faturamento, esconder a comparação e mostrar só o PE
+                document.getElementById('result_revenue').textContent = 'Não informado';
+                document.getElementById('result_status').className = 'status-badge';
+                document.getElementById('result_status').textContent = '—';
+                document.getElementById('comparison_bar_container').style.display = 'none';
+                document.getElementById('result_comparison_text').textContent = 'Informe o faturamento mensal para comparar com o ponto de equilíbrio.';
+            }
+
+            renderChart(cmo, salesExpenses, generalExpenses, partnerWithdrawal, totalFixedCosts);
+            generateInsight(breakeven, contributionMargin, cmo, totalFixedCosts, cmvPct, taxRate, restaurantName, revenue, surplus, isPositive);
+
+            // Save to Supabase
+            saveToSupabase({
+                restaurant_name: restaurantName,
+                responsible_name: responsibleName,
+                segment,
+                tax_regime: taxRegime,
+                tax_rate: taxRate,
+                monthly_revenue: revenue || null,
+                cmo_mode: cmoMode === 'funcionarios' ? 'funcionarios' : 'valor',
+                cmo_value: cmo,
+                employees_count: employees || null,
+                sales_expenses: salesExpenses,
+                general_expenses: generalExpenses,
+                partner_withdrawal: partnerWithdrawal,
+                cmv_percent: cmvPct,
+                total_fixed_costs: totalFixedCosts,
+                breakeven_point: Math.round(breakeven * 100) / 100,
+                contribution_margin: Math.round(contributionMargin * 10000) / 100,
+                revenue_gap: Math.round(surplus * 100) / 100
+            });
+
+            showSlide(5);
+        }
+
+        function formatBRL(value) {
+            return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function renderChart(cmo, sales, general, partners, total) {
+            const container = document.getElementById('result_chart');
+            container.innerHTML = '';
+            
+            const items = [
+                { label: 'CMO', value: cmo, color: '#6B3A1F' },
+                { label: 'Vendas', value: sales, color: '#D4722C' },
+                { label: 'Gerais', value: general, color: '#2D5016' },
+                { label: 'Sócios', value: partners, color: '#4A2C17' }
+            ];
+
+            const maxVal = Math.max(...items.map(i => i.value), 1);
+
+            items.forEach(item => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = ((item.value / maxVal) * 100) + '%';
+                bar.style.background = item.color;
+                bar.style.minHeight = '4px';
+                
+                const label = document.createElement('span');
+                label.className = 'bar-label';
+                label.textContent = item.label;
+                bar.appendChild(label);
+
+                const valueLabel = document.createElement('span');
+                valueLabel.className = 'bar-value';
+                valueLabel.textContent = total > 0 ? Math.round((item.value / total) * 100) + '%' : '0%';
+                bar.appendChild(valueLabel);
+
+                container.appendChild(bar);
+            });
+        }
+
+        function generateInsight(breakeven, margin, cmo, fixedCosts, cmvPct, taxRate, name, revenue, surplus, isPositive) {
+            let insight = '';
+            
+            if (margin <= 0) {
+                insight = `Atenção: com CMV de ${cmvPct}% e impostos de ${taxRate}%, a margem de contribuição é negativa. Isso significa que cada venda gera prejuízo antes mesmo de pagar os custos fixos. É urgente revisar preços ou reduzir CMV.`;
+            } else {
+                // Comparação com faturamento real
+                if (revenue > 0) {
+                    if (isPositive) {
+                        const marginSafety = ((surplus / breakeven) * 100).toFixed(0);
+                        insight = `${name} está operando ACIMA do ponto de equilíbrio, com margem de segurança de ${marginSafety}%. `;
+                        insight += `Isso significa que ${formatBRL(surplus)} por mês é lucro operacional antes de investimentos. `;
+                        
+                        if (marginSafety < 15) {
+                            insight += `Porém, a margem é apertada — qualquer queda de faturamento pode levar ao prejuízo. `;
+                        }
+                    } else {
+                        insight = `ATENÇÃO: ${name} está operando ABAIXO do ponto de equilíbrio. O restaurante está no prejuízo de ${formatBRL(Math.abs(surplus))} por mês. `;
+                        insight += `Para sair do vermelho, é necessário aumentar o faturamento em ${((Math.abs(surplus) / revenue) * 100).toFixed(0)}% ou reduzir custos fixos em ${formatBRL(Math.abs(surplus))}. `;
+                    }
+                } else {
+                    const perReal = (1 - margin).toFixed(2);
+                    insight = `${name}: para cada R$ 1,00 faturado, R$ ${perReal} vai para custos variáveis (CMV + impostos + taxas) e R$ ${margin.toFixed(2)} fica disponível para cobrir custos fixos e gerar lucro. `;
+                }
+                
+                if (cmo / fixedCosts > 0.6) {
+                    insight += `A mão de obra representa ${Math.round((cmo / fixedCosts) * 100)}% dos custos fixos — principal ponto de atenção. `;
+                }
+                
+                if (cmvPct > 38) {
+                    insight += `CMV de ${cmvPct}% está acima da média do setor (32-36%). `;
+                }
+
+                if (breakeven > 0) {
+                    const dailyTarget = breakeven / 26;
+                    insight += `Meta diária mínima: ${formatBRL(dailyTarget)} em 26 dias de operação.`;
+                }
+            }
+
+            document.getElementById('result_insight').textContent = insight;
+        }
+
+        // ===== SUPABASE INTEGRATION =====
+        async function saveToSupabase(data) {
+            const SUPABASE_URL = 'https://ezisuahknuspwchwflqq.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6aXN1YWhrbnVzcHdjaHdmbHFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NjQ4NzgsImV4cCI6MjA3NTI0MDg3OH0.6GPjWAQfhyLnwndxCxGYKeuAFDYcyKGBqYGo2oy8OI8';
+
+            if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+                console.log('[Rook] Supabase não configurado. Dados do diagnóstico:', data);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/onboarding_diagnostics`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    console.log('[Rook] Diagnóstico salvo com sucesso.');
+                } else {
+                    console.warn('[Rook] Erro ao salvar diagnóstico:', response.status);
+                }
+            } catch (err) {
+                console.warn('[Rook] Erro de conexão com Supabase:', err.message);
+            }
+        }
+    </script>
+</body>
+</html>
