@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Diagnóstico rápido de ponto de equilíbrio para clientes do Rook System."
+    />
+    <meta name="theme-color" content="#f7efe9" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Diagnóstico Rápido — Rook System</title>
+    <link rel="stylesheet" href="/diagnostico/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Voltar para o onboarding">
+        <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M24 4 44 24 24 44 4 24 24 4Zm0 6.5L10.5 24 24 37.5 37.5 24 24 10.5Z" />
+          <path d="m24 13 11 11-11 11-11-11 11-11Z" opacity=".58" />
+        </svg>
+        <span>
+          <strong>ROOK</strong>
+          <small>Diagnóstico rápido</small>
+        </span>
+      </a>
+      <a class="back-link" href="/">Voltar à apresentação</a>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Ponto de equilíbrio</p>
+          <h1>Conhecendo o seu negócio</h1>
+          <p class="hero-copy">
+            Preencha os dados abaixo para estimar o faturamento mensal necessário para cobrir os custos fixos e variáveis.
+          </p>
+        </div>
+        <aside class="hero-note">
+          <strong>Estimativa gerencial</strong>
+          <p>Use o resultado como referência inicial e valide decisões relevantes com seu contador ou consultor financeiro.</p>
+        </aside>
+      </section>
+
+      <div class="workspace">
+        <form class="diagnostic-form" id="diagnostic-form" novalidate>
+          <section class="form-section" aria-labelledby="identificacao-title">
+            <div class="section-heading">
+              <span>01</span>
+              <div>
+                <h2 id="identificacao-title">Identificação</h2>
+                <p>Personalize o diagnóstico para o cliente.</p>
+              </div>
+            </div>
+
+            <div class="field-grid field-grid-2">
+              <label class="field">
+                <span>Nome do restaurante</span>
+                <input id="restaurant_name" name="restaurant_name" type="text" autocomplete="organization" placeholder="Ex.: Restaurante Sabor & Arte" required />
+              </label>
+              <label class="field">
+                <span>Nome do responsável</span>
+                <input id="responsible_name" name="responsible_name" type="text" autocomplete="name" placeholder="Ex.: João Silva" required />
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="operacao-title">
+            <div class="section-heading">
+              <span>02</span>
+              <div>
+                <h2 id="operacao-title">Operação e tributação</h2>
+                <p>Dados que determinam a margem disponível.</p>
+              </div>
+            </div>
+
+            <div class="field-grid field-grid-2">
+              <label class="field">
+                <span>Segmento</span>
+                <select id="q_segment" name="segment" required>
+                  <option value="">Selecione…</option>
+                  <option value="restaurante">Restaurante</option>
+                  <option value="bar">Bar / Pub</option>
+                  <option value="pizzaria">Pizzaria</option>
+                  <option value="hamburgueria">Hamburgueria</option>
+                  <option value="cafeteria">Cafeteria / Padaria</option>
+                  <option value="delivery">Delivery / Dark Kitchen</option>
+                  <option value="hotel">Hotel / Pousada</option>
+                  <option value="outro">Outro</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Regime tributário atual</span>
+                <select id="q_tax_regime" name="tax_regime" required>
+                  <option value="">Selecione…</option>
+                  <option value="simples">Simples Nacional (~8%)</option>
+                  <option value="presumido">Lucro Presumido (~15%)</option>
+                  <option value="real">Lucro Real (~18%)</option>
+                  <option value="nao_sei">Não sei / Informar manualmente</option>
+                </select>
+              </label>
+
+              <label class="field field-hidden" id="tax_manual_row">
+                <span>Impostos sobre o faturamento (%)</span>
+                <input id="q_tax_manual" name="tax_rate_manual" type="number" inputmode="decimal" min="0" max="50" step="0.5" placeholder="Ex.: 12" />
+              </label>
+
+              <label class="field">
+                <span>Faturamento mensal</span>
+                <input id="q_revenue" name="monthly_revenue" type="text" inputmode="numeric" placeholder="R$ 0,00" required />
+              </label>
+
+              <label class="field">
+                <span>CMV médio estimado (%)</span>
+                <input id="q_cmv" name="cmv_percent" type="number" inputmode="decimal" min="0" max="80" step="0.5" placeholder="Ex.: 35" required />
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="custos-title">
+            <div class="section-heading">
+              <span>03</span>
+              <div>
+                <h2 id="custos-title">Custos fixos</h2>
+                <p>Informe os compromissos mensais do negócio.</p>
+              </div>
+            </div>
+
+            <div class="field-grid field-grid-2">
+              <label class="field">
+                <span>Como prefere informar a mão de obra?</span>
+                <select id="q_cmo_mode" name="cmo_mode" required>
+                  <option value="">Selecione…</option>
+                  <option value="valor">Sei o custo total (R$)</option>
+                  <option value="funcionarios">Sei o número de funcionários</option>
+                </select>
+              </label>
+
+              <label class="field field-hidden" id="cmo_value_row">
+                <span>Custo total com mão de obra</span>
+                <input id="q_cmo" name="cmo_value" type="text" inputmode="numeric" placeholder="R$ 0,00" />
+              </label>
+
+              <label class="field field-hidden" id="cmo_employees_row">
+                <span>Número total de funcionários</span>
+                <input id="q_employees" name="employees_count" type="number" inputmode="numeric" min="0" max="500" step="1" placeholder="Ex.: 12" />
+                <small>Estimativa utilizada: R$ 2.500 por funcionário.</small>
+              </label>
+
+              <label class="field">
+                <span>Despesas com vendas, comercial e marketing</span>
+                <input id="q_sales_expenses" name="sales_expenses" type="text" inputmode="numeric" placeholder="R$ 0,00" required />
+              </label>
+
+              <label class="field">
+                <span>Despesas gerais e administrativas</span>
+                <input id="q_general_expenses" name="general_expenses" type="text" inputmode="numeric" placeholder="R$ 0,00" required />
+              </label>
+
+              <label class="field">
+                <span>Retirada do(s) sócio(s)</span>
+                <input id="q_partner_withdrawal" name="partner_withdrawal" type="text" inputmode="numeric" placeholder="R$ 0,00" required />
+              </label>
+            </div>
+          </section>
+
+          <div class="form-feedback" id="form-feedback" role="alert" aria-live="assertive"></div>
+          <button class="calculate-button" type="submit">Calcular ponto de equilíbrio</button>
+        </form>
+
+        <section class="results" id="results" aria-labelledby="results-title" hidden>
+          <div class="results-heading">
+            <div>
+              <p class="eyebrow">Resultado estimado</p>
+              <h2 id="results-title">Diagnóstico de <span id="result_restaurant_name">seu restaurante</span></h2>
+            </div>
+            <span class="save-status" id="save-status" role="status" aria-live="polite">Pronto para calcular</span>
+          </div>
+
+          <article class="comparison-card">
+            <div>
+              <small>Faturamento informado</small>
+              <strong id="result_revenue">R$ 0,00</strong>
+            </div>
+            <span class="versus">versus</span>
+            <div>
+              <small>Ponto de equilíbrio</small>
+              <strong class="accent" id="result_breakeven">R$ 0,00</strong>
+            </div>
+            <span class="status-badge" id="result_status">—</span>
+          </article>
+
+          <div class="comparison-track" aria-hidden="true">
+            <span id="comparison-fill"></span>
+            <i id="comparison-marker"></i>
+          </div>
+          <p class="comparison-copy" id="result_comparison_text"></p>
+
+          <div class="metric-grid">
+            <article class="metric-card">
+              <small>Margem de contribuição</small>
+              <strong class="positive" id="result_margin">0%</strong>
+              <p>Percentual que permanece para cobrir custos fixos e lucro.</p>
+            </article>
+            <article class="metric-card">
+              <small>Custos fixos totais</small>
+              <strong class="accent" id="result_fixed_costs">R$ 0,00</strong>
+              <p id="result_fixed_breakdown">Composição mensal dos custos fixos.</p>
+            </article>
+          </div>
+
+          <article class="cost-card">
+            <small>Composição dos custos fixos</small>
+            <div class="cost-chart" id="result_chart"></div>
+          </article>
+
+          <article class="insight-card">
+            <small>Insight Rook</small>
+            <p id="result_insight"></p>
+          </article>
+
+          <div class="results-actions">
+            <button class="secondary-action" id="edit-values" type="button">Revisar valores</button>
+            <a class="primary-action" href="/">Continuar onboarding</a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="/diagnostico/app.js" defer></script>
+  </body>
+</html>
