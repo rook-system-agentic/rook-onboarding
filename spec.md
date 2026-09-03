@@ -1,80 +1,111 @@
-# Especificação técnica — Onboarding Rook HTML Interativo
+# Especificação técnica — Onboarding Rook editável
 
-## Dimensões
-- Slides: 2667x1500 px (16:9)
-- Aspect ratio: 1.778
+## Objetivo
 
-## Paleta de cores (extraída)
-- Fundo geral: #F5EBE3 (bege rosado claro)
-- Marrom escuro (títulos, números): #4A2C17
-- Marrom médio (badges/números): #6B3A1F
-- Bege/dourado claro (badge "ou"): #D4C4A8
-- Verde escuro (destaques): #2D5016
-- Laranja (CTAs): #D4722C
-- Branco (campos de input): #FFFFFF
-- Texto corpo: #3D2B1F
+Permitir que a gestora de marketing e comunicação altere livremente a apresentação do onboarding, publique sem aprovação prévia e restaure versões anteriores quando necessário, sem dar acesso editorial às regras financeiras do diagnóstico.
 
-## Tipografia
-- Títulos: serif, bold, ~48-60px equivalente
-- Corpo: sans-serif, regular, ~24-28px equivalente
-- Rodapé/notas: italic, ~20px
+## Arquitetura
 
-## Slide 3 — Layout do questionário
-- Título: "Conhecendo o seu negócio!" — topo esquerdo
-- 7 perguntas numeradas com badges circulares marrons (1-7)
-- Campos de input: retângulos brancos arredondados, alinhados à direita (~35% da largura)
-- Posição vertical dos campos (% do topo):
-  - Campo 1 (Segmento): ~10%
-  - Campo 2 (Regime tributário): ~18%
-  - Campo 3 (CMO): ~26%
-  - "ou" label: ~30%
-  - Campo 4 (Funcionários): ~35%
-  - Campo 5 (Vendas): ~43%
-  - Campo 6 (Gerais): ~51%
-  - Campo 7 (Sócios): ~59%
-- Rodapé: texto em itálico marrom claro sobre o cálculo de ponto de equilíbrio
-- Ícone Rook: canto inferior direito
+| Componente | Implementação | Fonte da verdade |
+| --- | --- | --- |
+| Apresentação | Google Slides incorporado por iframe | Arquivo `onboarding_ROOK` |
+| Conteúdo visual | Objetos nativos do Google Slides | Mesmo arquivo |
+| Histórico e rollback | Histórico de versões do Google | Mesmo arquivo |
+| Moldura pública | HTML/CSS/JS estático | `index.html`, `styles.css`, `app.js` |
+| Central editorial | Instruções e link protegido pelo Google | `gestao/` |
+| Diagnóstico | Página web independente | `diagnostico/` |
+| Persistência | REST do Supabase | `onboarding_diagnostics` |
+| Deploy | Vercel conectado ao GitHub | Branch `main` |
 
-## Campos adicionais (novos, não no original)
-- Campo 8: "Qual o CMV médio estimado (%)?" — adicionar após campo 7
-- Campo "Não sei meu regime": quando selecionado, abre campo de % de impostos
+## Apresentação oficial
 
-## Regras de negócio para cálculo
-- Alíquotas por regime:
-  - Simples Nacional: 8%
-  - Lucro Presumido: 15%
-  - Lucro Real: 18%
-  - "Não sei": campo manual
-- Taxa de cartão: +2% (fixo)
-- CMO por funcionário (fallback): R$ 2.500/funcionário
-- Fórmula Ponto de Equilíbrio:
-  PE = Custos_Fixos / (1 - CMV% - Impostos% - Taxa_Cartão%)
-  Custos_Fixos = CMO + Despesas_Vendas + Despesas_Gerais + Retirada_Socios
+- **ID:** `1UrA7-1Z-57ZhVw8vRkNZ6h7jvc-zpsZWq2TjlH7kUfc`
+- **Título:** `onboarding_ROOK`
+- **Proporção:** 16:9
+- **Quantidade na migração:** 21 slides
+- **Proprietária observada:** Isadora Martins (`isadora@rook.com.br`)
 
-## Slide de resultado (novo, após slide 3)
-- Fundo: mesmo #F5EBE3
-- Título: "Diagnóstico Rápido"
-- Exibir:
-  1. Faturamento mínimo mensal necessário (Ponto de Equilíbrio)
-  2. Composição dos custos fixos (gráfico de pizza ou barras)
-  3. Margem de contribuição disponível (%)
-  4. Insight textual: "Para cada R$ 1,00 faturado, R$ X,XX vai para custos variáveis e R$ X,XX fica para cobrir custos fixos"
-  5. Alerta se PE > benchmark de mercado
+A página pública deve carregar o modo incorporado do arquivo oficial. O usuário pode navegar pelos controles nativos. A moldura deve exibir um estado de carregamento durante a inicialização assíncrona do player e oferecer recarregamento manual com cache busting.
 
-## Dados salvos no Supabase (tabela onboarding_diagnostics)
-- restaurant_name
-- responsible_name
-- segment
-- tax_regime
-- tax_rate_pct
-- cmo_value (ou null)
-- employee_count (ou null)
-- cmo_calculated
-- sales_expenses
-- general_expenses
-- partner_withdrawal
-- cmv_pct
-- breakeven_revenue
-- contribution_margin_pct
-- created_at
-- source: 'onboarding_presentation'
+## Rotas e responsabilidades
+
+### `/`
+
+Deve preservar a identidade visual da Rook, incorporar a apresentação, oferecer acesso ao diagnóstico e funcionar sem overflow horizontal a partir de 320 px.
+
+### `/diagnostico/`
+
+Deve coletar identificação, operação, tributação e custos fixos; calcular ponto de equilíbrio; apresentar comparação com o faturamento; gerar insight gerencial; e tentar persistir o resultado. Uma falha de persistência não pode impedir a visualização do cálculo, mas deve ser comunicada ao usuário.
+
+### `/gestao/`
+
+Deve apontar para o arquivo oficial, explicar edição/publicação e documentar rollback. Não concede permissão; a autorização continua no Google. Deve permanecer fora de indexação pública por `noindex, nofollow`.
+
+## Paleta da moldura
+
+| Token | Valor |
+| --- | --- |
+| Marrom principal | `#2F1B0F` |
+| Fundo creme | `#F7EFE9` |
+| Laranja de ação | `#D4722C` |
+| Laranja escuro | `#B9581D` |
+| Verde positivo | `#1B7A3D` |
+| Vermelho negativo | `#B7332A` |
+
+## Regras do diagnóstico
+
+### Alíquotas
+
+| Regime | Percentual |
+| --- | ---: |
+| Simples Nacional | 8% |
+| Lucro Presumido | 15% |
+| Lucro Real | 18% |
+| Informado manualmente | 0% a 50% |
+| Taxa de cartão | 2% fixa |
+
+### CMO
+
+O usuário informa o valor total ou o número de funcionários. Quando informa funcionários, o sistema aplica R$ 2.500 por funcionário.
+
+### Fórmula
+
+```text
+Custos_Fixos = CMO + Despesas_Vendas + Despesas_Gerais + Retirada_Socios
+Margem_Contribuicao = 1 - (CMV% + Impostos% + Taxa_Cartao%)
+Ponto_Equilibrio = Custos_Fixos / Margem_Contribuicao
+```
+
+Se a margem de contribuição for menor ou igual a zero, o sistema deve indicar que o ponto de equilíbrio não é calculável e orientar revisão das premissas.
+
+## Persistência
+
+Payload enviado para `onboarding_diagnostics`:
+
+| Campo | Tipo lógico |
+| --- | --- |
+| `restaurant_name` | texto |
+| `responsible_name` | texto |
+| `segment` | texto |
+| `tax_regime` | texto |
+| `tax_rate` | número |
+| `monthly_revenue` | número |
+| `cmo_mode` | texto |
+| `cmo_value` | número |
+| `employees_count` | número ou nulo |
+| `sales_expenses` | número |
+| `general_expenses` | número |
+| `partner_withdrawal` | número |
+| `cmv_percent` | número |
+| `total_fixed_costs` | número |
+| `breakeven_point` | número |
+| `contribution_margin` | número |
+| `revenue_gap` | número |
+
+## Requisitos não funcionais
+
+A interface deve ser mobile-first, acessível por teclado, respeitar `prefers-reduced-motion`, evitar dependências de build e não apresentar erros de JavaScript. O player incorporado deve renderizar o slide interno com no mínimo 80% da largura útil em mobile e 85% em desktop, respeitando o letterboxing nativo.
+
+## Definition of Done
+
+A mudança é aprovada quando o Google Slides oficial carrega e navega; a atualização manual funciona; o cenário financeiro retorna R$ 119.090,91 de ponto de equilíbrio e 55,0% de margem; o payload de persistência contém os mesmos valores; `/gestao/` aponta para o arquivo correto e contém instruções de rollback; nenhuma rota apresenta overflow horizontal em 390 px; e não há erros locais de runtime.
